@@ -46,6 +46,7 @@
             </div>
             <div class="modal-body">
                 <form id="form-wrap" style="margin-top:0">
+                    <input type="hidden" name="id">
                     <div class="form-element">
                         <p>Tanggal Awal<span>*</span></p>
                         <input type="date" style="width:100%" name="tglawal" />
@@ -306,11 +307,16 @@
         <!-- Contact -->
         <?php require_once("./contact.php") ?>
 
+        
+
     </div>
 
     <script src="js/jquery-3.3.1.js"></script>
     <script>
+        let jenisSimpan
         $(document).ready(function() {
+            loadRiwayatMagang()
+
             $(document).keydown(function(e) {
                 // console.log(e.which)
                 if (e.which == 27) {
@@ -326,9 +332,22 @@
                 $(this).closest(".modal").css('display', 'none')
             })
 
-            loadRiwayatMagang()
+            // Button Edit
+            $(".b-edit").click(function(e) {
+                alert('masuk gan')
+                let data = $(this).attr('data-value')
+                console.log(data)
+                openModalMagang()
+            })
 
         })
+
+        function editMagang(e) {
+            // alert('masuk gan')
+            let data = JSON.parse(e.target.dataset.value)
+            console.log(data)
+            openModalMagang(data)
+        }
 
         function loadRiwayatMagang(params) {
             $('#loading-magang').css({
@@ -354,7 +373,7 @@
                         $('#magang-list-wrap').append(`
                             <div class="period-wrap editable-wrapper" style="position: relative;">
                                 <button class="b-accent b-delete">❌</button>
-                                <button class="b-accent b-edit">✏️</button>
+                                <button onclick="editMagang(event)" class="b-accent b-edit" data-value='${JSON.stringify(mag)}'>✏️</button>
                                 <h2 id="period">${mag.periode}</h1>
                                     <h3 class="period-title">${mag.peran}</h3>
                                     <p class="period-subtitle">${mag.instansi}</p>
@@ -366,10 +385,23 @@
             })
         }
 
-        function openModalMagang() {
+        function openModalMagang(data) {
             $('#modal-magang').css({
                 display: 'flex'
             })
+            if (!empty(data)) {
+                jenisSimpan = "ubah"
+                const {tglawal,tglakhir,peran,instansi,deskripsi,id} = data
+                $('#modal-magang input[name=id]').val(id)
+                $('#modal-magang input[name=tglawal]').val(tglawal)
+                $('#modal-magang input[name=tglakhir]').val(tglakhir)
+                $('#modal-magang input[name=peran]').val(peran)
+                $('#modal-magang input[name=instansi]').val(instansi)
+                $('#modal-magang textarea[name=deskripsi]').val(deskripsi)
+            } else {
+                jenisSimpan = "tambah"
+                clearInputModal()
+            }
         }
 
         function openModalPendidikan() {
@@ -402,6 +434,7 @@
         }
 
         function simpanMagang(e) {
+            let id = $('#modal-magang input[name=id]').val()
             let tglAwal = $('#modal-magang input[name=tglawal]').val()
             let tglAkhir = $('#modal-magang input[name=tglakhir]').val()
             let peran = $('#modal-magang input[name=peran]').val()
@@ -458,12 +491,13 @@
                 type: 'post',
                 url: 'api/magang.php',
                 data: {
+                    id,
                     tglAwal,
                     tglAkhir,
                     peran,
                     instansi,
                     deskripsi,
-                    jenis: "tambah"
+                    jenis: jenisSimpan
                 },
                 dataType: 'JSON',
                 success: function(res) {
@@ -474,7 +508,6 @@
                     $(".loading-simpan").css({
                         display: 'none'
                     })
-                    clearInputModal()
                     loadRiwayatMagang()
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {

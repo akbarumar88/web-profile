@@ -128,6 +128,7 @@ $hobi = $conn
     <div class="section-caption">
         <h3>Keterampilan Pengembangan Desktop</h3>
     </div>
+    <button class="b-edit" style="position: static;">Edit Gan</button>
 
     <?php foreach ($keterampilan_desktop as $i) { ?>
         <div class="stat-wrap editable-wrapper" style="position: relative;">

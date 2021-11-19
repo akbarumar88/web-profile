@@ -14,7 +14,7 @@ if ($jenis == "get") {
     try {
         //code...
         $riwayat_magang = $conn
-            ->query("SELECT concat(date_format(tglawal, '%b %Y'), ' - ', date_format(tglakhir, '%b %Y')) as periode, peran, instansi, deskripsi from riwayat_magang rm ;")
+            ->query("SELECT id, concat(date_format(tglawal, '%b %Y'), ' - ', date_format(tglakhir, '%b %Y')) as periode, tglawal, tglakhir, peran, instansi, deskripsi from riwayat_magang rm ;")
             ->fetchAll();
         echo json_encode([
             'status' => 1,
@@ -52,6 +52,33 @@ if ($jenis == "get") {
         echo json_encode([
             'status' => 0,
             'message' => 'Error saat Tambah Data Magang. ' . $e->getMessage(),
+        ]);
+        //throw $th;
+    }
+} else if ($jenis == "ubah") {
+    // Ubah
+    $id = $_POST['id'];
+    $tglAwal = $_POST['tglAwal'];
+    $tglAkhir = $_POST['tglAkhir'];
+    $peran = $_POST['peran'];
+    $instansi = $_POST['instansi'];
+    $deskripsi = $_POST['deskripsi'];
+
+    try {
+        $conn
+            ->prepare("UPDATE riwayat_magang 
+                    SET tglawal='$tglAwal',tglakhir='$tglAkhir',peran='$peran',instansi='$instansi',deskripsi='$deskripsi'
+                    WHERE id=$id ")
+            ->execute();
+        echo json_encode([
+            'status' => 1,
+            'message' => 'Berhasil Ubah Data Magang',
+        ]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode([
+            'status' => 0,
+            'message' => 'Error saat Ubah Data Magang. ' . $e->getMessage(),
         ]);
         //throw $th;
     }
