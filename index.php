@@ -307,7 +307,7 @@
         <!-- Contact -->
         <?php require_once("./contact.php") ?>
 
-        
+
 
     </div>
 
@@ -349,6 +349,38 @@
             openModalMagang(data)
         }
 
+        function hapusMagang(e) {
+            // alert('masuk gan')
+            let id = JSON.parse(e.target.dataset.value)
+            console.log(id)
+            let yes = confirm("Apakah anda yakin ingin menghapus data magang?")
+            if (yes) {
+                $.ajax({
+                    type: 'post',
+                    url: 'api/magang.php',
+                    data: {
+                        id,
+                        jenis: "hapus"
+                    },
+                    dataType: 'JSON',
+                    success: function(res) {
+                        alert(res.message)
+                        loadRiwayatMagang()
+                    },
+                    error: function(XMLHttpRequest, textStatus, errorThrown) {
+                        let res = JSON.parse(XMLHttpRequest.responseText)
+                        alert(res.message)
+                        console.log({
+                            XMLHttpRequest,
+                            textStatus,
+                            errorThrown
+                        })
+                    }
+                })
+            }
+            // openModalMagang(data)
+        }
+
         function loadRiwayatMagang(params) {
             $('#loading-magang').css({
                 display: 'block'
@@ -372,7 +404,7 @@
                     riwayatMagang.forEach(mag => {
                         $('#magang-list-wrap').append(`
                             <div class="period-wrap editable-wrapper" style="position: relative;">
-                                <button class="b-accent b-delete">❌</button>
+                                <button onclick="hapusMagang(event)" class="b-accent b-delete" data-value="${mag.id}">❌</button>
                                 <button onclick="editMagang(event)" class="b-accent b-edit" data-value='${JSON.stringify(mag)}'>✏️</button>
                                 <h2 id="period">${mag.periode}</h1>
                                     <h3 class="period-title">${mag.peran}</h3>
@@ -391,7 +423,14 @@
             })
             if (!empty(data)) {
                 jenisSimpan = "ubah"
-                const {tglawal,tglakhir,peran,instansi,deskripsi,id} = data
+                const {
+                    tglawal,
+                    tglakhir,
+                    peran,
+                    instansi,
+                    deskripsi,
+                    id
+                } = data
                 $('#modal-magang input[name=id]').val(id)
                 $('#modal-magang input[name=tglawal]').val(tglawal)
                 $('#modal-magang input[name=tglakhir]').val(tglakhir)

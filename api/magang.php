@@ -82,4 +82,25 @@ if ($jenis == "get") {
         ]);
         //throw $th;
     }
+}  else if ($jenis == "hapus") {
+    // Ubah
+    $id = $_POST['id'];
+
+    try {
+        $conn
+            ->prepare("DELETE FROM riwayat_magang WHERE id=$id ")
+            ->execute();
+        echo json_encode([
+            'status' => 1,
+            'message' => 'Berhasil Hapus Data Magang',
+        ]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode([
+            'status' => 0,
+            'message' => 'Error saat Hapus Data Magang. ' . $e->getMessage(),
+        ]);
+        //throw $th;
+    }
 }
+
