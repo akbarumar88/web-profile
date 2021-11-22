@@ -12,4 +12,5 @@ try {
     // echo "Koneksi Berhasil";
 } catch (PDOException $e) {
     echo "Koneksi Gagal: " . $e->getMessage();
+    // throw $e;
 }
