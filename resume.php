@@ -1,14 +1,14 @@
 <?php
 require_once("./db.php");
 $latar_belakang = "Saya adalah <b><u>seorang mahasiswa</u></b> UPN Veteran Jawa Timur Surabaya. Saya menempuh pendidikan S1 Jurusan Teknik Informatika.";
-$riwayat_magang = $conn
-    ->query("SELECT concat(date_format(tglawal, '%b %Y'), ' - ', date_format(tglakhir, '%b %Y')) as periode, peran, instansi, deskripsi from riwayat_magang rm ;")
-    ->fetchAll();
+// $riwayat_magang = $conn
+//     ->query("SELECT concat(date_format(tglawal, '%b %Y'), ' - ', date_format(tglakhir, '%b %Y')) as periode, peran, instansi, deskripsi from riwayat_magang rm ;")
+//     ->fetchAll();
 // var_dump($riwayat_magang);die;
 
-$riwayat_pendidikan = $conn
-    ->query("SELECT concat(date_format(tglawal, '%Y'), ' - ', date_format(tglakhir, '%Y')) as periode, tingkat, instansi, deskripsi from riwayat_pendidikan rp ;")
-    ->fetchAll();
+// $riwayat_pendidikan = $conn
+//     ->query("SELECT concat(date_format(tglawal, '%Y'), ' - ', date_format(tglakhir, '%Y')) as periode, tingkat, instansi, deskripsi from riwayat_pendidikan rp ;")
+//     ->fetchAll();
 // var_dump($riwayat_pendidikan);die;
 $keterampilan_web = $conn
     ->query("SELECT  bahasa
@@ -79,16 +79,19 @@ $hobi = $conn
         <h3>Edukasi</h3>
     </div>
 
-    <?php foreach ($riwayat_pendidikan as $i) { ?>
-        <div class="period-wrap editable-wrapper" id="#period1" style="position: relative;">
-            <button class="b-accent b-delete">❌</button>
-            <button class="b-accent b-edit">✏️</button>
-            <h2 id="period"><?= $i['periode'] ?></h1>
-                <h3 class="period-title"><?= $i['tingkat'] ?></h3>
-                <p class="period-subtitle">di <?= $i['instansi'] ?></p>
-                <p class="period-description"><?= $i['deskripsi'] ?></p>
-        </div>
-    <?php } ?>
+    <h3 id="loading-pendidikan">Sedang memuat data pendidikan...</h3>
+    <div id="pendidikan-list-wrap">
+        <?php /*foreach ($riwayat_pendidikan as $i) { ?>
+            <div class="period-wrap editable-wrapper" id="#period1" style="position: relative;">
+                <button class="b-accent b-delete">❌</button>
+                <button class="b-accent b-edit">✏️</button>
+                <h2 id="period"><?= $i['periode'] ?></h1>
+                    <h3 class="period-title"><?= $i['tingkat'] ?></h3>
+                    <p class="period-subtitle">di <?= $i['instansi'] ?></p>
+                    <p class="period-description"><?= $i['deskripsi'] ?></p>
+            </div>
+        <?php } */ ?>
+    </div>
     <button class="b-accent" onclick="openModalPendidikan()">➕ Tambah Riwayat Pendidikan</button>
 
     <!-- Development Skill -->

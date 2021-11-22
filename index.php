@@ -96,34 +96,43 @@
             </div>
             <div class="modal-body">
                 <form id="form-wrap" style="margin-top:0">
+                    <input type="hidden" name="id">
                     <div class="form-element">
                         <p>Tanggal Awal<span>*</span></p>
-                        <input type="date" style="width:100%" />
+                        <input type="date" style="width:100%" name="tglawal" />
+                        <p class="error" style="display:none">Harap isi tanggal awal</p>
                     </div>
 
                     <div class="form-element">
                         <p>Tanggal Akhir<span>*</span></p>
-                        <input type="date" style="width:100%" />
+                        <input type="date" style="width:100%" name="tglakhir" />
+                        <p class="error" style="display:none">Harap isi tanggal akhir</p>
                     </div>
 
                     <div class="form-element">
                         <p>Tingkat<span>*</span></p>
-                        <input type="text" style="width:100%" />
+                        <input type="text" style="width:100%" name="tingkat" />
+                        <p class="error" style="display:none">Harap isi tingkat</p>
                     </div>
 
                     <div class="form-element">
                         <p>Instansi<span>*</span></p>
-                        <input type="text" style="width:100%" />
+                        <input type="text" style="width:100%" name="instansi" />
+                        <p class="error" style="display:none">Harap isi Instansi</p>
                     </div>
 
                     <div class="form-element">
                         <p>Deskripsi<span>*</span></p>
-                        <textarea name="" id="" cols="30" rows="10" style="width:100%"></textarea>
+                        <textarea name="deskripsi" id="" cols="30" rows="10" style="width:100%"></textarea>
+                        <p class="error" style="display:none">Harap isi Deksripsi</p>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="b-accent" id="simpan-pendidikan">Simpan</button>
+                <button class="b-accent" id="simpan-pendidikan" onclick="simpanPendidikan(event)">
+                    Simpan
+                    <img class="loading-simpan" src="img/loading-buffering.gif" alt="loading" width="20px" height="20px" style="margin-left: 8px;">
+                </button>
             </div>
         </div>
     </div>
@@ -316,6 +325,7 @@
         let jenisSimpan
         $(document).ready(function() {
             loadRiwayatMagang()
+            loadRiwayatPendidikan()
 
             $(document).keydown(function(e) {
                 // console.log(e.which)
@@ -349,6 +359,13 @@
             openModalMagang(data)
         }
 
+        function editPendidikan(e) {
+            // alert('masuk gan')
+            let data = JSON.parse(e.target.dataset.value)
+            console.log(data)
+            openModalPendidikan(data)
+        }
+
         function hapusMagang(e) {
             // alert('masuk gan')
             let id = JSON.parse(e.target.dataset.value)
@@ -366,6 +383,38 @@
                     success: function(res) {
                         alert(res.message)
                         loadRiwayatMagang()
+                    },
+                    error: function(XMLHttpRequest, textStatus, errorThrown) {
+                        let res = JSON.parse(XMLHttpRequest.responseText)
+                        alert(res.message)
+                        console.log({
+                            XMLHttpRequest,
+                            textStatus,
+                            errorThrown
+                        })
+                    }
+                })
+            }
+            // openModalMagang(data)
+        }
+
+        function hapusPendidikan(e) {
+            // alert('masuk gan')
+            let id = JSON.parse(e.target.dataset.value)
+            console.log(id)
+            let yes = confirm("Apakah anda yakin ingin menghapus data pendidikan?")
+            if (yes) {
+                $.ajax({
+                    type: 'post',
+                    url: 'api/pendidikan.php',
+                    data: {
+                        id,
+                        jenis: "hapus"
+                    },
+                    dataType: 'JSON',
+                    success: function(res) {
+                        alert(res.message)
+                        loadRiwayatPendidikan()
                     },
                     error: function(XMLHttpRequest, textStatus, errorThrown) {
                         let res = JSON.parse(XMLHttpRequest.responseText)
@@ -417,6 +466,42 @@
             })
         }
 
+        function loadRiwayatPendidikan(params) {
+            $('#loading-pendidikan').css({
+                display: 'block'
+            })
+            $.ajax({
+                url: "api/pendidikan.php",
+                data: ({
+                    jenis: 'get'
+                }),
+                type: "post",
+                dataType: "json",
+                success: function(res) {
+                    // console.log('jQuery', res, typeof res)
+                    $('#loading-pendidikan').css({
+                        display: 'none'
+                    })
+                    $('#pendidikan-list-wrap').empty()
+                    const {
+                        data: riwayatPendidikan
+                    } = res
+                    riwayatPendidikan.forEach(mag => {
+                        $('#pendidikan-list-wrap').append(`
+                            <div class="period-wrap editable-wrapper" id="#period1" style="position: relative;">
+                                <button class="b-accent b-delete" onclick="hapusPendidikan(event)" data-value="${mag.id}">❌</button>
+                                <button class="b-accent b-edit" onclick="editPendidikan(event)" data-value='${JSON.stringify(mag)}'>✏️</button>
+                                <h2 id="period">${mag.periode}</h1>
+                                    <h3 class="period-title">${mag.tingkat}</h3>
+                                    <p class="period-subtitle">di ${mag.instansi}</p>
+                                    <p class="period-description">${mag.deskripsi}</p>
+                            </div>
+                        `)
+                    });
+                }
+            })
+        }
+
         function openModalMagang(data) {
             $('#modal-magang').css({
                 display: 'flex'
@@ -443,10 +528,30 @@
             }
         }
 
-        function openModalPendidikan() {
+        function openModalPendidikan(data) {
             $('#modal-pendidikan').css({
                 display: 'flex'
             })
+            if (!empty(data)) {
+                jenisSimpan = "ubah"
+                const {
+                    tglawal,
+                    tglakhir,
+                    tingkat,
+                    instansi,
+                    deskripsi,
+                    id
+                } = data
+                $('#modal-pendidikan input[name=id]').val(id)
+                $('#modal-pendidikan input[name=tglawal]').val(tglawal)
+                $('#modal-pendidikan input[name=tglakhir]').val(tglakhir)
+                $('#modal-pendidikan input[name=tingkat]').val(tingkat)
+                $('#modal-pendidikan input[name=instansi]').val(instansi)
+                $('#modal-pendidikan textarea[name=deskripsi]').val(deskripsi)
+            } else {
+                jenisSimpan = "tambah"
+                clearInputModal()
+            }
         }
 
         function openModalKeterampilan(type) {
@@ -564,12 +669,113 @@
             })
         }
 
+        function simpanPendidikan(e) {
+            let id = $('#modal-pendidikan input[name=id]').val()
+            let tglAwal = $('#modal-pendidikan input[name=tglawal]').val()
+            let tglAkhir = $('#modal-pendidikan input[name=tglakhir]').val()
+            let tingkat = $('#modal-pendidikan input[name=tingkat]').val()
+            let instansi = $('#modal-pendidikan input[name=instansi]').val()
+            let deskripsi = $('#modal-pendidikan textarea[name=deskripsi]').val()
+            let valid = true
+
+            // Clear data error dulu
+            $('#modal-pendidikan input, #modal-pendidikan textarea').removeClass('error')
+            $('#modal-pendidikan p.error').css('display', 'none')
+            if (empty(tglAwal)) {
+                $('#modal-pendidikan input[name=tglawal]').addClass('error')
+                $('#modal-pendidikan input[name=tglawal]').siblings('.error').css('display', 'block')
+                valid = false
+            }
+            if (empty(tglAkhir)) {
+                $('#modal-pendidikan input[name=tglakhir]').addClass('error')
+                $('#modal-pendidikan input[name=tglakhir]').siblings('.error').css('display', 'block')
+                valid = false
+            }
+            if (empty(tingkat)) {
+                $('#modal-pendidikan input[name=tingkat]').addClass('error')
+                $('#modal-pendidikan input[name=tingkat]').siblings('.error').css('display', 'block')
+                valid = false
+            }
+            if (empty(instansi)) {
+                $('#modal-pendidikan input[name=instansi]').addClass('error')
+                $('#modal-pendidikan input[name=instansi]').siblings('.error').css('display', 'block')
+                valid = false
+            }
+            if (empty(deskripsi)) {
+                $('#modal-pendidikan textarea[name=deskripsi]').addClass('error')
+                $('#modal-pendidikan textarea[name=deskripsi]').siblings('.error').css('display', 'block')
+                valid = false
+            }
+            if (!empty(tglAwal) && !empty(tglAkhir) && tglAwal == tglAkhir) {
+                alert("Tanggal Awal dan Tanggal Akhir tidak boleh sama.")
+                valid = false
+            }
+            if (!valid) return
+
+            // console.log({
+            //     tglAwal,
+            //     tglAkhir,
+            //     tingkat,
+            //     instansi,
+            //     deskripsi,
+            // })
+
+            $(".loading-simpan").css({
+                display: 'inline'
+            })
+            $.ajax({
+                type: 'post',
+                url: 'api/pendidikan.php',
+                data: {
+                    id,
+                    tglAwal,
+                    tglAkhir,
+                    tingkat,
+                    instansi,
+                    deskripsi,
+                    jenis: jenisSimpan
+                },
+                dataType: 'JSON',
+                success: function(res) {
+                    alert(res.message)
+                    $('#modal-pendidikan').css({
+                        display: 'none'
+                    })
+                    $(".loading-simpan").css({
+                        display: 'none'
+                    })
+                    loadRiwayatPendidikan()
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    let res = JSON.parse(XMLHttpRequest.responseText)
+                    alert(res.message)
+                    console.log({
+                        XMLHttpRequest,
+                        textStatus,
+                        errorThrown
+                    })
+                    $(".loading-simpan").css({
+                        display: 'none'
+                    })
+                }
+            })
+        }
+
         function clearInputModal() {
+            // Modal magang
             $('#modal-magang input[name=tglawal]').val('')
             $('#modal-magang input[name=tglakhir]').val('')
             $('#modal-magang input[name=peran]').val('')
             $('#modal-magang input[name=instansi]').val('')
             $('#modal-magang textarea[name=deskripsi]').val('')
+
+            // Modal Pendidikan
+            $('#modal-pendidikan input[name=id]').val('')
+            $('#modal-pendidikan input[name=tglawal]').val('')
+            $('#modal-pendidikan input[name=tglakhir]').val('')
+            $('#modal-pendidikan input[name=tingkat]').val('')
+            $('#modal-pendidikan input[name=instansi]').val('')
+            $('#modal-pendidikan textarea[name=deskripsi]').val('')
         }
     </script>
 </body>
