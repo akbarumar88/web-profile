@@ -167,7 +167,9 @@ function loadRiwayatPendidikan(params) {
             const {
                 data: riwayatPendidikan
             } = res
+            console.log('pend.',riwayatPendidikan)
             riwayatPendidikan.forEach(mag => {
+                console.log('mag',mag)
                 $('#pendidikan-list-wrap')
                     .append(`
                         <div class="period-wrap editable-wrapper" id="#period1" style="position: relative;">
@@ -184,28 +186,29 @@ function loadRiwayatPendidikan(params) {
     })
 }
 
-function loadRiwayatPendidikan(params) {
-    $('#loading-pendidikan').css({
+function loadKeterampilanWeb(params) {
+    $('#loading-ketweb').css({
         display: 'block'
     })
     $.ajax({
-        url: "api/pendidikan.php",
+        url: "api/keterampilan.php",
         data: ({
-            jenis: 'get'
+            jenis: 'get',
+            kategori: 'web'
         }),
         type: "post",
         dataType: "json",
         success: function (res) {
             // console.log('jQuery', res, typeof res)
-            $('#loading-pendidikan').css({
+            $('#loading-ketweb').css({
                 display: 'none'
             })
             $('#pendidikan-list-wrap').empty()
             const {
-                data: riwayatPendidikan
+                data: keterampilan
             } = res
-            riwayatPendidikan.forEach(mag => {
-                $('#pendidikan-list-wrap')
+            keterampilan.forEach(mag => {
+                $('#ketweb-list-wrap')
                     .append(`
                         <div class="period-wrap editable-wrapper" id="#period1" style="position: relative;">
                             <button class="b-accent b-delete" onclick="hapusPendidikan(event)" data-value="${mag.id}">❌</button>
@@ -219,6 +222,14 @@ function loadRiwayatPendidikan(params) {
             });
         }
     })
+}
+
+function loadKeterampilanDesktop() {
+    
+}
+
+function loadKeterampilanSeluler() {
+    
 }
 
 function openModalMagang(data) {

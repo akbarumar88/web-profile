@@ -10,15 +10,15 @@ $latar_belakang = "Saya adalah <b><u>seorang mahasiswa</u></b> UPN Veteran Jawa 
 //     ->query("SELECT concat(date_format(tglawal, '%Y'), ' - ', date_format(tglakhir, '%Y')) as periode, tingkat, instansi, deskripsi from riwayat_pendidikan rp ;")
 //     ->fetchAll();
 // var_dump($riwayat_pendidikan);die;
-$keterampilan_web = $conn
-    ->query("SELECT  bahasa
-                ,id_html AS id
-                ,mk.stat
-            FROM mhs_keterampilan mk
-            INNER JOIN identitas i ON i.id = mk.idmhs
-            INNER JOIN keterampilan k ON k.id = mk.idketerampilan
-            WHERE mk.idmhs = 1 AND kategori='web'")
-    ->fetchAll();
+// $keterampilan_web = $conn
+//     ->query("SELECT  bahasa
+//                 ,id_html AS id
+//                 ,mk.stat
+//             FROM mhs_keterampilan mk
+//             INNER JOIN identitas i ON i.id = mk.idmhs
+//             INNER JOIN keterampilan k ON k.id = mk.idketerampilan
+//             WHERE mk.idmhs = 1 AND kategori='web'")
+//     ->fetchAll();
 // var_dump($keterampilan_web);die;
 
 $keterampilan_seluler = $conn
