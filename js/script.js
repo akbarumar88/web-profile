@@ -2,9 +2,9 @@ let jenisSimpan
 $(document).ready(function () {
     loadRiwayatMagang()
     loadRiwayatPendidikan()
-    loadKeterampilanWeb() 
-    loadKeterampilanDesktop() 
-    loadKeterampilanSeluler() 
+    loadKeterampilanWeb()
+    loadKeterampilanDesktop()
+    loadKeterampilanSeluler()
 
 
     $(document).keydown(function (e) {
@@ -167,9 +167,9 @@ function loadRiwayatPendidikan(params) {
             const {
                 data: riwayatPendidikan
             } = res
-            console.log('pend.',riwayatPendidikan)
+            console.log('pend.', riwayatPendidikan)
             riwayatPendidikan.forEach(mag => {
-                console.log('mag',mag)
+                // console.log('mag',mag)
                 $('#pendidikan-list-wrap')
                     .append(`
                         <div class="period-wrap editable-wrapper" id="#period1" style="position: relative;">
@@ -199,24 +199,24 @@ function loadKeterampilanWeb(params) {
         type: "post",
         dataType: "json",
         success: function (res) {
-            // console.log('jQuery', res, typeof res)
+            console.log('success load skill web', res, typeof res)
             $('#loading-ketweb').css({
                 display: 'none'
             })
-            $('#pendidikan-list-wrap').empty()
+            $('#ketweb-list-wrap').empty()
             const {
                 data: keterampilan
             } = res
             keterampilan.forEach(mag => {
                 $('#ketweb-list-wrap')
                     .append(`
-                        <div class="period-wrap editable-wrapper" id="#period1" style="position: relative;">
-                            <button class="b-accent b-delete" onclick="hapusPendidikan(event)" data-value="${mag.id}">❌</button>
-                            <button class="b-accent b-edit" onclick="editPendidikan(event)" data-value='${JSON.stringify(mag)}'>✏️</button>
-                            <h2 id="period">${mag.periode}</h1>
-                                <h3 class="period-title">${mag.tingkat}</h3>
-                                <p class="period-subtitle">di ${mag.instansi}</p>
-                                <p class="period-description">${mag.deskripsi}</p>
+                        <div class="stat-wrap editable-wrapper" style="position: relative;">
+                            <button class="b-accent b-delete">❌</button>
+                            <button class="b-accent b-edit">✏️</button>
+                            <p class="title">${mag.bahasa}</p>
+                            <div class="stat-value-wrap">
+                                <div style="width:${mag.stat}%" class="stat-value" value="${mag.stat}" id="${mag.id}"></div>
+                            </div>
                         </div>
                         `)
             });
@@ -225,11 +225,11 @@ function loadKeterampilanWeb(params) {
 }
 
 function loadKeterampilanDesktop() {
-    
+
 }
 
 function loadKeterampilanSeluler() {
-    
+
 }
 
 function openModalMagang(data) {
@@ -284,11 +284,25 @@ function openModalPendidikan(data) {
     }
 }
 
-function openModalKeterampilan(type) {
-    $('#modal-keterampilan').attr('data-type', type)
+function openModalKeterampilan(kategori, data) {
+    $('#modal-keterampilan').attr('data-kategori', kategori)
     $('#modal-keterampilan').css({
         display: 'flex'
     })
+    if (!empty(data)) {
+        jenisSimpan = "ubah"
+        const {
+            id,
+            bahasa,
+            stat
+        } = data
+        $('#modal-keterampilan input[name=id]').val(id)
+        $('#modal-keterampilan input[name=bahasa]').val(bahasa)
+        $('#modal-keterampilan input[name=stat]').val(stat)
+    } else {
+        jenisSimpan = "tambah"
+        clearInputModal()
+    }
 }
 
 function openModalHobi() {
@@ -491,6 +505,82 @@ function simpanPendidikan(e) {
     })
 }
 
+function simpanKeterampilan(e) {
+    let id = $('#modal-keterampilan input[name=id]').val()
+    let bahasa = $('#modal-keterampilan input[name=bahasa]').val()
+    let stat = $('#modal-keterampilan input[name=stat]').val()
+    let kategori = $('#modal-keterampilan').attr('data-kategori')
+    let valid = true
+
+    // Clear data error dulu
+    $('#modal-keterampilan input, #modal-keterampilan textarea').removeClass('error')
+    $('#modal-keterampilan p.error').css('display', 'none')
+    if (empty(bahasa)) {
+        $('#modal-keterampilan input[name=bahasa]').addClass('error')
+        $('#modal-keterampilan input[name=bahasa]').siblings('.error').css('display', 'block')
+        valid = false
+    }
+    if (empty(stat)) {
+        $('#modal-keterampilan input[name=stat]').addClass('error')
+        $('#modal-keterampilan input[name=stat]').siblings('.error').css('display', 'block')
+        valid = false
+    }
+    if (!valid) return
+
+    console.log({
+        id,
+        bahasa,
+        stat,
+        kategori
+    })
+    // return
+
+    $(".loading-simpan").css({
+        display: 'inline'
+    })
+    $.ajax({
+        type: 'post',
+        url: 'api/keterampilan.php',
+        data: {
+            id,
+            bahasa,
+            stat,
+            kategori,
+            jenis: jenisSimpan
+        },
+        dataType: 'JSON',
+        success: function (res) {
+            alert(res.message)
+            $('#modal-keterampilan').css({
+                display: 'none'
+            })
+            $(".loading-simpan").css({
+                display: 'none'
+            })
+            // Reload Data Keterampilan
+            if (kategori == 'web') {
+                loadKeterampilanWeb()
+            } else if (kategori = 'seluler') {
+                loadKeterampilanSeluler()
+            } else {
+                loadKeterampilanDesktop()
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            let res = JSON.parse(XMLHttpRequest.responseText)
+            alert(res.message)
+            console.log({
+                XMLHttpRequest,
+                textStatus,
+                errorThrown
+            })
+            $(".loading-simpan").css({
+                display: 'none'
+            })
+        }
+    })
+}
+
 function clearInputModal() {
     // Modal magang
     $('#modal-magang input[name=tglawal]').val('')
@@ -506,4 +596,9 @@ function clearInputModal() {
     $('#modal-pendidikan input[name=tingkat]').val('')
     $('#modal-pendidikan input[name=instansi]').val('')
     $('#modal-pendidikan textarea[name=deskripsi]').val('')
+
+    // Modal Keterampilan
+    $('#modal-keterampilan input[name=id]').val('')
+    $('#modal-keterampilan input[name=bahasa]').val('')
+    $('#modal-keterampilan input[name=stat]').val('')
 }

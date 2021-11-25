@@ -37,16 +37,15 @@ if ($jenis == "get") {
     }
 } else if ($jenis == "tambah") {
     // Tambah
-    $tglAwal = $_POST['tglAwal'];
-    $tglAkhir = $_POST['tglAkhir'];
-    $tingkat = $_POST['tingkat'];
-    $instansi = $_POST['instansi'];
-    $deskripsi = $_POST['deskripsi'];
+    $kategori = $_POST['kategori'];
+    $bahasa = $_POST['bahasa'];
+    $stat = $_POST['stat'];
+    $idhtml = strtolower($bahasa);
 
     try {
         $conn
-            ->prepare("INSERT INTO riwayat_pendidikan(idmhs,tglawal,tglakhir,tingkat,instansi,deskripsi)
-                    VALUES(1,'$tglAwal', '$tglAkhir', '$tingkat', '$instansi', '$deskripsi') ")
+            ->prepare("INSERT INTO keterampilan(kategori,bahasa,stat,id_html)
+                    VALUES('$kategori','$bahasa', $stat, '$idhtml') ")
             ->execute();
         echo json_encode([
             'status' => 1,
@@ -63,16 +62,15 @@ if ($jenis == "get") {
 } else if ($jenis == "ubah") {
     // Ubah
     $id = $_POST['id'];
-    $tglAwal = $_POST['tglAwal'];
-    $tglAkhir = $_POST['tglAkhir'];
-    $tingkat = $_POST['tingkat'];
-    $instansi = $_POST['instansi'];
-    $deskripsi = $_POST['deskripsi'];
+    $kategori = $_POST['kategori'];
+    $tglAwal = $_POST['bahasa'];
+    $tglAkhir = $_POST['stat'];
+    $idhtml = strtolower($bahasa);
 
     try {
         $conn
-            ->prepare("UPDATE riwayat_pendidikan 
-                    SET tglawal='$tglAwal',tglakhir='$tglAkhir',tingkat='$tingkat',instansi='$instansi',deskripsi='$deskripsi'
+            ->prepare("UPDATE keterampilan 
+                    SET bahasa='$bahasa', stat=$stat, id_html='$idhtml'
                     WHERE id=$id ")
             ->execute();
         echo json_encode([

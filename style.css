@@ -228,7 +228,7 @@ p.error {
   background-color: #333;
   height: 6px;
 }
-.stat-value#html5 {
+/* .stat-value#html5 {
   width: 50%;
 }
 .stat-value#css3 {
@@ -251,7 +251,7 @@ p.error {
 }
 .stat-value#vb {
   width: 45%;
-}
+} */
 
 /* Hobby Section */
 .hobby-section-wrap {

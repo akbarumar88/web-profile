@@ -146,19 +146,22 @@
             </div>
             <div class="modal-body">
                 <form id="form-wrap" style="margin-top:0">
+                    <input type="hidden" name="id">
                     <div class="form-element">
                         <p>Bahasa<span>*</span></p>
-                        <input type="text" style="width:100%" />
+                        <input type="text" name="bahasa" style="width:100%" />
+                        <p class="error" style="display:none">Harap isi Bahasa.</p>
                     </div>
 
                     <div class="form-element">
                         <p>Stat (1-100)<span>*</span></p>
-                        <input type="number" min="1" max="100" style="width:100%" />
+                        <input type="number" name="stat" min="1" max="100" style="width:100%" />
+                        <p class="error" style="display:none">Harap isi Stat.</p>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="b-accent" id="simpan-keterampilan">Simpan</button>
+                <button class="b-accent" id="simpan-keterampilan" onclick="simpanKeterampilan(event)">Simpan</button>
             </div>
         </div>
     </div>
