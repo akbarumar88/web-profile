@@ -118,16 +118,18 @@ $hobi = $conn
         <h3>Keterampilan Pengembangan Seluler</h3>
     </div>
 
-    <?php foreach ($keterampilan_seluler as $i) { ?>
-        <div class="stat-wrap editable-wrapper" style="position: relative;">
-            <button class="b-accent b-delete">❌</button>
-            <button class="b-accent b-edit">✏️</button>
-            <p class="title"><?= $i['bahasa'] ?></p>
-            <div class="stat-value-wrap">
-                <div class="stat-value" id="<?= $i['id'] ?>"></div>
+    <div id="ketseluler-list-wrap">
+        <?php /*foreach ($keterampilan_seluler as $i) { ?>
+            <div class="stat-wrap editable-wrapper" style="position: relative;">
+                <button class="b-accent b-delete">❌</button>
+                <button class="b-accent b-edit">✏️</button>
+                <p class="title"><?= $i['bahasa'] ?></p>
+                <div class="stat-value-wrap">
+                    <div class="stat-value" id="<?= $i['id'] ?>"></div>
+                </div>
             </div>
-        </div>
-    <?php } ?>
+        <?php }*/ ?>
+    </div>
     <button class="b-accent" onclick="openModalKeterampilan('seluler')">➕ Tambah Keterampilan Seluler</button>
 
     <div class="section-caption">
@@ -135,16 +137,18 @@ $hobi = $conn
     </div>
     <button class="b-edit" style="position: static;">Edit Gan</button>
 
-    <?php foreach ($keterampilan_desktop as $i) { ?>
-        <div class="stat-wrap editable-wrapper" style="position: relative;">
-            <button class="b-accent b-delete">❌</button>
-            <button class="b-accent b-edit">✏️</button>
-            <p class="title"><?= $i['bahasa'] ?></p>
-            <div class="stat-value-wrap">
-                <div class="stat-value" id="<?= $i['id'] ?>"></div>
+    <div id="ketdesktop-list-wrap">
+        <?php /*foreach ($keterampilan_desktop as $i) { ?>
+            <div class="stat-wrap editable-wrapper" style="position: relative;">
+                <button class="b-accent b-delete">❌</button>
+                <button class="b-accent b-edit">✏️</button>
+                <p class="title"><?= $i['bahasa'] ?></p>
+                <div class="stat-value-wrap">
+                    <div class="stat-value" id="<?= $i['id'] ?>"></div>
+                </div>
             </div>
-        </div>
-    <?php } ?>
+        <?php }*/ ?>
+    </div>
     <button class="b-accent" onclick="openModalKeterampilan('desktop')">➕ Tambah Keterampilan Desktop</button>
 
     <!-- Hobi -->

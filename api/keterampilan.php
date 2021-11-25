@@ -16,8 +16,9 @@ if ($jenis == "get") {
         //code...
         $keterampilan = $conn
             ->query("SELECT  bahasa
-                        ,id_html AS id
+                        ,id
                         ,stat
+                        ,kategori
                     FROM keterampilan k2 
                     WHERE TRUE AND kategori='$kategori';")
             ->fetchAll();
@@ -63,8 +64,8 @@ if ($jenis == "get") {
     // Ubah
     $id = $_POST['id'];
     $kategori = $_POST['kategori'];
-    $tglAwal = $_POST['bahasa'];
-    $tglAkhir = $_POST['stat'];
+    $bahasa = $_POST['bahasa'];
+    $stat = $_POST['stat'];
     $idhtml = strtolower($bahasa);
 
     try {
@@ -91,7 +92,7 @@ if ($jenis == "get") {
 
     try {
         $conn
-            ->prepare("DELETE FROM riwayat_pendidikan WHERE id=$id ")
+            ->prepare("DELETE FROM keterampilan WHERE id=$id ")
             ->execute();
         echo json_encode([
             'status' => 1,

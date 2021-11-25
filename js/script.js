@@ -2,9 +2,9 @@ let jenisSimpan
 $(document).ready(function () {
     loadRiwayatMagang()
     loadRiwayatPendidikan()
-    loadKeterampilanWeb()
-    loadKeterampilanDesktop()
-    loadKeterampilanSeluler()
+    loadKeterampilan('web')
+    loadKeterampilan('desktop')
+    loadKeterampilan('seluler')
 
 
     $(document).keydown(function (e) {
@@ -44,6 +44,13 @@ function editPendidikan(e) {
     let data = JSON.parse(e.target.dataset.value)
     console.log(data)
     openModalPendidikan(data)
+}
+
+function editKeterampilan(e) {
+    // alert('masuk gan')
+    let data = JSON.parse(e.target.dataset.value)
+    console.log(data)
+    openModalKeterampilan(data.kategori, data)
 }
 
 function hapusMagang(e) {
@@ -95,6 +102,38 @@ function hapusPendidikan(e) {
             success: function (res) {
                 alert(res.message)
                 loadRiwayatPendidikan()
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                let res = JSON.parse(XMLHttpRequest.responseText)
+                alert(res.message)
+                console.log({
+                    XMLHttpRequest,
+                    textStatus,
+                    errorThrown
+                })
+            }
+        })
+    }
+    // openModalMagang(data)
+}
+
+function hapusKeterampilan(e) {
+    // alert('masuk gan')
+    let { id, kategori } = JSON.parse(e.target.dataset.value)
+    console.log(id)
+    let yes = confirm("Apakah anda yakin ingin menghapus data keterampilan?")
+    if (yes) {
+        $.ajax({
+            type: 'post',
+            url: 'api/keterampilan.php',
+            data: {
+                id,
+                jenis: "hapus"
+            },
+            dataType: 'JSON',
+            success: function (res) {
+                alert(res.message)
+                loadKeterampilan(kategori)
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 let res = JSON.parse(XMLHttpRequest.responseText)
@@ -186,33 +225,33 @@ function loadRiwayatPendidikan(params) {
     })
 }
 
-function loadKeterampilanWeb(params) {
-    $('#loading-ketweb').css({
+function loadKeterampilan(kategori) {
+    $(`#loading-ket${kategori}`).css({
         display: 'block'
     })
     $.ajax({
         url: "api/keterampilan.php",
         data: ({
             jenis: 'get',
-            kategori: 'web'
+            kategori
         }),
         type: "post",
         dataType: "json",
         success: function (res) {
-            console.log('success load skill web', res, typeof res)
-            $('#loading-ketweb').css({
-                display: 'none'
+            // console.log(`success load skill ${kategori}`, res, typeof res)
+            $(`#loading-ket${kategori}`).css({
+                display: `none`
             })
-            $('#ketweb-list-wrap').empty()
+            $(`#ket${kategori}-list-wrap`).empty()
             const {
                 data: keterampilan
             } = res
             keterampilan.forEach(mag => {
-                $('#ketweb-list-wrap')
+                $(`#ket${kategori}-list-wrap`)
                     .append(`
                         <div class="stat-wrap editable-wrapper" style="position: relative;">
-                            <button class="b-accent b-delete">❌</button>
-                            <button class="b-accent b-edit">✏️</button>
+                            <button class="b-accent b-delete" onclick="hapusKeterampilan(event)" data-value='${JSON.stringify(mag)}'>❌</button>
+                            <button class="b-accent b-edit" onclick="editKeterampilan(event)" data-value='${JSON.stringify(mag)}'>✏️</button>
                             <p class="title">${mag.bahasa}</p>
                             <div class="stat-value-wrap">
                                 <div style="width:${mag.stat}%" class="stat-value" value="${mag.stat}" id="${mag.id}"></div>
@@ -224,13 +263,6 @@ function loadKeterampilanWeb(params) {
     })
 }
 
-function loadKeterampilanDesktop() {
-
-}
-
-function loadKeterampilanSeluler() {
-
-}
 
 function openModalMagang(data) {
     $('#modal-magang').css({
@@ -558,13 +590,7 @@ function simpanKeterampilan(e) {
                 display: 'none'
             })
             // Reload Data Keterampilan
-            if (kategori == 'web') {
-                loadKeterampilanWeb()
-            } else if (kategori = 'seluler') {
-                loadKeterampilanSeluler()
-            } else {
-                loadKeterampilanDesktop()
-            }
+            loadKeterampilan(kategori)
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             let res = JSON.parse(XMLHttpRequest.responseText)
